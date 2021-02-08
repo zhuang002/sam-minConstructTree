@@ -18,7 +18,12 @@ public class Main {
 		// TODO Auto-generated method stub
 		ArrayList<Path> paths=retrievePaths(graph);
 		Collections.sort(paths,(x,y)->x.length-y.length);
-		
+		int[][] rt=new int[graph.length][graph.length];
+		for (int i=0;i<graph.length;i++) {
+			for (int j=0;j<graph.length;j++) {
+				rt[i][j]=0;
+			}
+		}
 		int count=0;
 		for (Path path:paths) {
 			int group1=groups[path.node1];
@@ -28,26 +33,35 @@ public class Main {
 					groups[path.node1]=groups[path.node2]=groupId;
 					groupId++;
 					count+=2;
+					rt[path.node1][path.node2]=path.length;
+					rt[path.node2][path.node1]=path.length;
 				} else {
 					groups[path.node1]=group2;
 					count++;
+					rt[path.node1][path.node2]=path.length;
+					rt[path.node2][path.node1]=path.length;
 				}
 			} else {
 				if (group2==-1) {
 					groups[path.node2]=group1;
 					count++;
+					rt[path.node1][path.node2]=path.length;
+					rt[path.node2][path.node1]=path.length;
 				} else if (group1!=group2) {
 					for (int i=0;i<groups.length;i++) {
 						if (groups[i]==group2) {
 							groups[i]=group1;
 						}
 					}
+					rt[path.node1][path.node2]=path.length;
+					rt[path.node2][path.node1]=path.length;
 				}
 			}
 			if (count>=groups.length) {
 				break;
 			}
 		}
+		return rt;
 		
 	}
 
