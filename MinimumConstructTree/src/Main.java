@@ -4,6 +4,8 @@ import java.util.Scanner;
 
 public class Main {
 	
+	static int[] groups=null;
+	static int groupId=0;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		int[][] graph=ReadInput();
@@ -17,7 +19,53 @@ public class Main {
 		ArrayList<Path> paths=retrievePaths(graph);
 		Collections.sort(paths,(x,y)->x.length-y.length);
 		
+		int count=0;
+		for (Path path:paths) {
+			int group1=groups[path.node1];
+			int group2=groups[path.node2];
+			if (group1==-1) {
+				if (group2==-1) {
+					groups[path.node1]=groups[path.node2]=groupId;
+					groupId++;
+					count+=2;
+				} else {
+					groups[path.node1]=group2;
+					count++;
+				}
+			} else {
+				if (group2==-1) {
+					groups[path.node2]=group1;
+					count++;
+				} else if (group1!=group2) {
+					for (int i=0;i<groups.length;i++) {
+						if (groups[i]==group2) {
+							groups[i]=group1;
+						}
+					}
+				}
+			}
+			if (count>=groups.length) {
+				break;
+			}
+		}
 		
+	}
+
+	private static ArrayList<Path> retrievePaths(int[][] graph) {
+		// TODO Auto-generated method stub
+		ArrayList<Path> paths=new ArrayList<>();
+		for (int i=0;i<graph.length-1;i++) {
+			for (int j=i+1;j<graph.length;j++) {
+				if (graph[i][j]!=0) {
+					Path path=new Path();
+					path.node1=i;
+					path.node2=j;
+					path.length=graph[i][j];
+					paths.add(path);
+				}
+			}
+		}
+		return paths;
 	}
 
 	private static void PrintGraph(int[][] tree) {
@@ -48,6 +96,10 @@ public class Main {
 			int node2=sc.nextInt();
 			graph[node1][node2]=graph[node2][node1]=sc.nextInt();
 		}
+		
+		groups=new int[nodes];
+		for (int i=0;i<nodes;i++)
+			groups[i]=-1;
 		return graph;
 	}
 
