@@ -8,22 +8,18 @@ public class Main {
 	static int groupId=0;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int[][] graph=ReadInput();
-		int[][] tree=getMinConstructTreeKruscal(graph);
+		ArrayList<Path> graph=ReadInput();
+		ArrayList<Path> tree=getMinConstructTreeKruscal(graph);
 		PrintGraph(tree);
 		
 	}
 
-	private static int[][] getMinConstructTreeKruscal(int[][] graph) {
+	private static ArrayList<Path> getMinConstructTreeKruscal(ArrayList<Path> paths) {
 		// TODO Auto-generated method stub
-		ArrayList<Path> paths=retrievePaths(graph);
+		
 		Collections.sort(paths,(x,y)->x.length-y.length);
-		int[][] rt=new int[graph.length][graph.length];
-		for (int i=0;i<graph.length;i++) {
-			for (int j=0;j<graph.length;j++) {
-				rt[i][j]=0;
-			}
-		}
+		ArrayList<Path> rt=new ArrayList<>();
+		
 		int count=0;
 		for (Path path:paths) {
 			int group1=groups[path.node1];
@@ -33,28 +29,25 @@ public class Main {
 					groups[path.node1]=groups[path.node2]=groupId;
 					groupId++;
 					count+=2;
-					rt[path.node1][path.node2]=path.length;
-					rt[path.node2][path.node1]=path.length;
+					rt.add(path);
+					
 				} else {
 					groups[path.node1]=group2;
 					count++;
-					rt[path.node1][path.node2]=path.length;
-					rt[path.node2][path.node1]=path.length;
+					rt.add(path);
 				}
 			} else {
 				if (group2==-1) {
 					groups[path.node2]=group1;
 					count++;
-					rt[path.node1][path.node2]=path.length;
-					rt[path.node2][path.node1]=path.length;
+					rt.add(path);
 				} else if (group1!=group2) {
 					for (int i=0;i<groups.length;i++) {
 						if (groups[i]==group2) {
 							groups[i]=group1;
 						}
 					}
-					rt[path.node1][path.node2]=path.length;
-					rt[path.node2][path.node1]=path.length;
+					rt.add(path);
 				}
 			}
 			if (count>=groups.length) {
@@ -65,50 +58,27 @@ public class Main {
 		
 	}
 
-	private static ArrayList<Path> retrievePaths(int[][] graph) {
+	private static void PrintGraph(ArrayList<Path> tree) {
 		// TODO Auto-generated method stub
-		ArrayList<Path> paths=new ArrayList<>();
-		for (int i=0;i<graph.length-1;i++) {
-			for (int j=i+1;j<graph.length;j++) {
-				if (graph[i][j]!=0) {
-					Path path=new Path();
-					path.node1=i;
-					path.node2=j;
-					path.length=graph[i][j];
-					paths.add(path);
-				}
-			}
-		}
-		return paths;
-	}
-
-	private static void PrintGraph(int[][] tree) {
-		// TODO Auto-generated method stub
-		for (int node1=0;node1<tree.length;node1++) {
-			for (int node2=node1+1;node2<tree.length;node2++) {
-				if (tree[node1][node2]!=0) {
-					System.out.println(node1+" "+node2+" "+tree[node1][node2]);
-				}
-			}
+		for (Path path:tree) {
+			System.out.println(path.node1+" "+path.node2+" "+path.length);
 		}
 		
 	}
 
-	private static int[][] ReadInput() {
+	private static ArrayList<Path> ReadInput() {
 		// TODO Auto-generated method stub
 		Scanner sc=new Scanner(System.in);
 		int lines=sc.nextInt();
 		int nodes=sc.nextInt();
-		int[][] graph=new int[nodes][nodes];
-		for (int i=0;i<nodes;i++) {
-			for (int j=0;j<nodes;j++) {
-				graph[i][j]=0;
-			}
-		}
+		ArrayList<Path> graph=new ArrayList();
+		
 		for (int i=0;i<lines;i++) {
-			int node1=sc.nextInt();
-			int node2=sc.nextInt();
-			graph[node1][node2]=graph[node2][node1]=sc.nextInt();
+			Path path=new Path();
+			path.node1=sc.nextInt();
+			path.node2=sc.nextInt();
+			path.length=sc.nextInt();
+			graph.add(path);
 		}
 		
 		groups=new int[nodes];
